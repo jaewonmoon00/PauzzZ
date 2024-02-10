@@ -1,7 +1,7 @@
 // Check if there are any video elements on the page
-const videos = document.querySelectorAll("video");
+const video = document.querySelector("video");
 // TODO: check if video is playing
-if (videos.length > 0) {
+if (video.length > 0 && !video.paused) {
 	// Notify the background script that a video is present
 	chrome.runtime.sendMessage({ videoPlaying: true });
 } else {
