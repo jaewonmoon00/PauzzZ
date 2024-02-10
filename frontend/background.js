@@ -36,6 +36,7 @@ async function captureAndAnalyzeWebcam() {
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+	console.log("PauzzZ background script running");
 	if (request.videoPlaying) {
 		console.log("Video is playing on the page");
 	} else {

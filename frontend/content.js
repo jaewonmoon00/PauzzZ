@@ -1,4 +1,5 @@
 // Check if there are any video elements on the page
+console.log("Content script running");
 const videos = document.querySelectorAll("video");
 // TODO: check if video is playing
 if (videos.length > 0) {
