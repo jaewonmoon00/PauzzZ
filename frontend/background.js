@@ -1,24 +1,21 @@
-let intervalId;
-
 async function sendRequest(isPlaying) {
 	if (isPlaying) {
-		intervalId = setInterval(async () => {
-			try {
-				const response = await fetch("http://localhost:8000/");
-				const data = await response.json();
-				console.log(data);
-			} catch (error) {
-				console.error("Error:", error);
-			}
-		}, 5000);
-	} else if (intervalId) {
-		clearInterval(intervalId);
+		try {
+			const response = await fetch("http://localhost:8000/api/analyze/");
+			const data = await response.json();
+			return data;
+		} catch (error) {
+			console.error("Error:", error);
+		}
 	}
 }
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-	console.log(message);
 	if (message.videoPlaying) {
-		sendRequest(message.videoPlaying);
+		response = sendRequest(message.videoPlaying);
+		// Do something with the message here
+		sendResponse({ status: response["status"] });
+	} else {
+		sendResponse({ status: "background else block reached" });
 	}
 });
