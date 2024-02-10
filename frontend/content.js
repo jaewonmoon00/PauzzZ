@@ -3,17 +3,9 @@ const videos = document.querySelectorAll("video");
 // TODO: check if video is playing
 if (videos.length > 0) {
 	// Notify the background script that a video is present
-	chrome.runtime.sendMessage({ videoPresent: true });
-
-	// Call the notifyVideoPlaying function
-	notifyVideoPlaying();
-} else {
-	chrome.runtime.sendMessage({ videoPresent: false });
-}
-
-// Function to notify the background script that a video is playing
-function notifyVideoPlaying() {
 	chrome.runtime.sendMessage({ videoPlaying: true });
+} else {
+	chrome.runtime.sendMessage({ videoPlaying: false });
 }
 
 // Listen for messages from the background script

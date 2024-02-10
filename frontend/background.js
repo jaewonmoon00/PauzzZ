@@ -35,10 +35,10 @@ async function captureAndAnalyzeWebcam() {
 	}, 5000); // Example: Send frame every 5 seconds
 }
 
-// Listen for messages from the content script
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-	console.log("HELLOHELLO");
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.videoPlaying) {
-		// captureAndAnalyzeWebcam();
+		console.log("Video is playing on the page");
+	} else {
+		console.log("Video is not playing");
 	}
 });
