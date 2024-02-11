@@ -1,11 +1,9 @@
-name: mcwics2024
+name: McWiCS2024
 
 dependencies:
-  - numpy
-  - requests
-  - scipy
-  - keras
-  - tensorflow
-  - opencv
- 
-
+    - numpy
+    - requests
+    - scipy
+    - keras
+    - tensorflow
+    - opencv
