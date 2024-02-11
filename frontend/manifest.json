@@ -1,6 +1,6 @@
 {
     "manifest_version":3,
-    "name":"SiestaSync Service",
+    "name":"PauzzZ",
     "description":"pauses and rewinds video when you fall asleep",
     "version":"1.0",
     "icons": {
