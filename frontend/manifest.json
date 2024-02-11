@@ -14,7 +14,8 @@
             "48": "icons/icon48.png",
             "128": "icons/icon128.png"
         },
-        "default_title": "Control Video"
+        "default_title": "PauzzZ",
+        "default_popup": "popup.html"
     },
     "content_scripts":[
         {

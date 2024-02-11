@@ -90,6 +90,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	// Check for the message and use the value
 	if (message.timeLimit) {
 		console.log("Time limit is ", message.timeLimit);
-		timeLimit = message.timeLimit;
+		timeLimit = message.timeLimit * 1000;
 	}
 });
