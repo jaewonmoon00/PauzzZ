@@ -1,3 +1,7 @@
+fetch("http://localhost:8000/api/update/").catch((error) => {
+	console.error("Error:", error);
+});
+
 async function sendRequest(isPlaying) {
 	if (isPlaying) {
 		try {

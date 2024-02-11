@@ -30,6 +30,7 @@ def analyze_eye_state(request):
     if request.method == "GET":
         return JsonResponse(userState)
 
+@csrf_exempt
 def update(reqeust):
     if reqeust.method == "GET":
         gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -69,7 +70,7 @@ def update(reqeust):
 
 
         # Define the window size for the moving average
-        window_size = 40  # You can adjust this as needed
+        window_size = 5  # You can adjust this as needed
 
 
         def moving_average(array, new_value, window_size):
@@ -158,8 +159,8 @@ def update(reqeust):
 
                 moving_average(array, value, window_size)
                 ifTrigger()
-                # print("Smoothed Value:", sum(array) / len(array))  # Adjust as needed
-
+                print("Smoothed Value:", sum(array) / len(array))  # Adjust as needed
+                print("userState:", userState)
                 # cv2.imshow("right_eye", right_eye)
                 # cv2.imshow("left_eye", left_eye)
 
