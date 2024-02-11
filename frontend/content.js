@@ -63,7 +63,6 @@ setInterval(() => {
 					if (!sleepStartAt) {
 						sleepStartAt = Date.now();
 					} else if (Date.now() - sleepStartAt > timeLimit) {
-						console.log("User is asleep for more than 30 seconds");
 						video.pause();
 						// Math.max function is used to ensure that the current time doesn't go below 0.
 						video.currentTime = Math.max(
@@ -89,7 +88,7 @@ setInterval(() => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 	// Check for the message and use the value
 	if (message.timeLimit) {
-		console.log("Time limit is ", message.timeLimit);
+		console.log("New time limit is ", message.timeLimit);
 		timeLimit = message.timeLimit * 1000;
 	}
 });
