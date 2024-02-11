@@ -28,7 +28,7 @@ config = tf.ConfigProto(
     intra_op_parallelism_threads=num_cores,
     inter_op_parallelism_threads=num_cores,
     allow_soft_placement=True,
-    device_count={'CPU': num_CPU, 'GPU': num_GPU}
+    device_count={"CPU": num_CPU, "GPU": num_GPU},
 )
 
 session = tf.Session(config=config)
@@ -36,23 +36,29 @@ K.set_session(session)
 
 
 class FacialLandMarksPosition:
-    left_eye_start_index, left_eye_end_index = face_utils.FACIAL_LANDMARKS_IDXS["left_eye"]
-    right_eye_start_index, right_eye_end_index = face_utils.FACIAL_LANDMARKS_IDXS["right_eye"]
+    left_eye_start_index, left_eye_end_index = face_utils.FACIAL_LANDMARKS_IDXS[
+        "left_eye"
+    ]
+    right_eye_start_index, right_eye_end_index = face_utils.FACIAL_LANDMARKS_IDXS[
+        "right_eye"
+    ]
 
 
-facial_landmarks_predictor = './models/68_face_landmarks_predictor.dat'
+facial_landmarks_predictor = "./models/68_face_landmarks_predictor.dat"
 predictor = dlib.shape_predictor(facial_landmarks_predictor)
 
-model = load_model('./models/trained_eye_state_model_grayscale40x25newdata.h5')
+model = load_model("./models/trained_eye_state_model_grayscale40x25newdata.h5")
 
 
 def predict_eye_state(model, image):
     image = cv2.resize(image, (35, 20))
     image = image.astype(dtype=np.float32)
 
-    image_batch = np.reshape(image, (1, 20, 35, 1))  # Update reshape for grayscale images
+    image_batch = np.reshape(
+        image, (1, 20, 35, 1)
+    )  # Update reshape for grayscale images
     image_batch /= 255.0  # Normalize the image
-    return 1 if model.predict(image_batch)[0][0] > 0.40  else 0
+    return 1 if model.predict(image_batch)[0][0] > 0.40 else 0
 
 
 cap = cv2.VideoCapture(0)
@@ -73,9 +79,12 @@ while True:
     l, _, _ = cv2.split(lab)
 
     resized_height, resized_width = l.shape[:2]
-    height_ratio, width_ratio = original_height / resized_height, original_width / resized_width
+    height_ratio, width_ratio = (
+        original_height / resized_height,
+        original_width / resized_width,
+    )
 
-    face_locations = face_recognition.face_locations(l, model='hog')
+    face_locations = face_recognition.face_locations(l, model="hog")
 
     if len(face_locations):
         top, right, bottom, left = face_locations[0]
@@ -93,34 +102,44 @@ while True:
 
         face_landmarks = face_utils.shape_to_np(shape)
 
-        left_eye_indices = face_landmarks[FacialLandMarksPosition.left_eye_start_index:
-                                          FacialLandMarksPosition.left_eye_end_index]
+        left_eye_indices = face_landmarks[
+            FacialLandMarksPosition.left_eye_start_index : FacialLandMarksPosition.left_eye_end_index
+        ]
 
         (x, y, w, h) = cv2.boundingRect(np.array([left_eye_indices]))
-        left_eye = gray[y:y + h, x:x + w]
+        left_eye = gray[y : y + h, x : x + w]
 
-        right_eye_indices = face_landmarks[FacialLandMarksPosition.right_eye_start_index:
-                                           FacialLandMarksPosition.right_eye_end_index]
+        right_eye_indices = face_landmarks[
+            FacialLandMarksPosition.right_eye_start_index : FacialLandMarksPosition.right_eye_end_index
+        ]
 
         (x, y, w, h) = cv2.boundingRect(np.array([right_eye_indices]))
-        right_eye = gray[y:y + h, x:x + w]
+        right_eye = gray[y : y + h, x : x + w]
 
-        left_eye_open = 'yes' if predict_eye_state(model=model, image=left_eye) else 'no'
-        right_eye_open = 'yes' if predict_eye_state(model=model, image=right_eye) else 'no'
+        left_eye_open = (
+            "yes" if predict_eye_state(model=model, image=left_eye) else "no"
+        )
+        right_eye_open = (
+            "yes" if predict_eye_state(model=model, image=right_eye) else "no"
+        )
 
-        print('left eye open: {0}    right eye open: {1}'.format(left_eye_open, right_eye_open))
+        print(
+            "left eye open: {0}    right eye open: {1}".format(
+                left_eye_open, right_eye_open
+            )
+        )
 
-        if left_eye_open == 'yes' and right_eye_open == 'yes':
+        if left_eye_open == "yes" and right_eye_open == "yes":
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
         else:
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
 
-        cv2.imshow('right_eye', right_eye)
-        cv2.imshow('left_eye', left_eye)
+        cv2.imshow("right_eye", right_eye)
+        cv2.imshow("left_eye", left_eye)
 
-    cv2.imshow('frame', cv2.flip(frame, 1))
+    cv2.imshow("frame", cv2.flip(frame, 1))
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(1) & 0xFF == ord("q"):
         break
 
 # When everything done, release the capture

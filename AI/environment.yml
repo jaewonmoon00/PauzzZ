@@ -1,4 +1,4 @@
-name: facial_landmarks_env
+name: mcwics2024
 
 dependencies:
   - numpy
