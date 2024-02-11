@@ -33,6 +33,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 		return true; // Indicates we will respond asynchronously
 	}
 });
+
 // chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 // 	console.log(message);
 // 	// Do something with the message here

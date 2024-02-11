@@ -47,6 +47,7 @@
 // ##########################################################################################
 let sleepStartAt = null;
 let timeLimit = 5000;
+// TODO:
 setInterval(() => {
 	let video = document.querySelector("video");
 	console.log("video is ", video);
@@ -84,43 +85,11 @@ setInterval(() => {
 			});
 	}
 }, 500);
-//TODO: this depends on website. We need to figure out what to do for different websites. We can either
-//TODO: have if blocks for different websites or we can have a generic solution that works for all websites
-
-// TODO: set a global variable that stores the status of video playing and sendMessage to background.js
-
-// TODO: set a global variable that keeps track of the time when was the last time the video playing
-// TODO: -status value changed. => existing conditons && current_time - last_time > TIME_LIMIT
-
-// TODO: global variable such as TIME_LIMIT = 3
-// if (video.length > 0 && !video.paused) {
-// 	// Notify the background script that a video is present
-// 	console.log("Video is playing on the page");
-// 	chrome.runtime.sendMessage({ videoPlaying: true });
-// } else {
-// 	chrome.runtime.sendMessage({ videoPlaying: false });
-// }
-
-// // Listen for messages from the background script
-// chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-// 	console.log("PauzzZ content script got message from background script");
-// 	if (request.command === "pause") {
-// 		document.querySelector("video").pause();
-// 	} else if (request.command === "play") {
-// 		document.querySelector("video").play();
-// 	}
-// });
-// // Example of detecting video play event (simplified)
-// document.querySelectorAll("video").forEach((video) => {
-// 	video.addEventListener("play", notifyVideoPlaying);
-// });
-// let message = { videoPlaying: true };
-
-// chrome.runtime
-// 	.sendMessage(message)
-// 	.then((response) => {
-// 		console.log(response);
-// 	})
-// 	.catch((error) => {
-// 		console.error(error);
-// 	});
+// TODO: listen from popup.js to get the time limit
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+	// Check for the message and use the value
+	if (message.timeLimit) {
+		console.log("Time limit is ", message.timeLimit);
+		timeLimit = message.timeLimit;
+	}
+});
