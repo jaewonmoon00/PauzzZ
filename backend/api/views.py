@@ -1,34 +1,24 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import base64
-
-
 from keras.models import load_model
 import numpy as np
 import keras
-import requests
 from scipy.spatial import distance as dist
 from imutils import face_utils
 import numpy as np
 import time
 import dlib
-import cv2, os, sys
-import collections
-import random
+import cv2
 import face_recognition
-import pickle
-import math
-import threading
 from keras.applications import MobileNetV2
-
 import tensorflow.compat.v1 as tf
 from keras import backend as K
 
 userState = {"status": "awake"}
 array = [1] * 9
 
-
 def ifTrigger():
+    global userState
     if sum(array) / len(array) > 0.5:
         userState = {"status": "awake"}
     else:

@@ -1,3 +1,4 @@
+// ##################Below is to get the src link from my courses lecture recordings##################
 // let checkIframeInterval = setInterval(() => {
 // 	// let iframes = document.querySelectorAll("d2l-iframe d2l-iframe-fullscreen");
 // 	let iframes = document.querySelectorAll(
@@ -44,32 +45,44 @@
 // }, 1000); // Check every 1000 milliseconds (1 second)
 
 // ##########################################################################################
-// Check for video elements every 5 seconds
+let sleepStartAt = null;
+let timeLimit = 30000;
 setInterval(() => {
 	let video = document.querySelector("video");
 	console.log("video is ", video);
 	if (video && !video.paused) {
 		console.log("Video is playing");
-		video.pause();
+		let message = { videoPlaying: true };
+		chrome.runtime
+			.sendMessage(message)
+			.then((response) => {
+				console.log("response is ", response);
+				if (response["status"] == "asleep") {
+					console.log("The user is asleep");
+					if (!sleepStartAt) {
+						sleepStartAt = Date.now();
+					} else if (Date.now() - sleepStartAt > timeLimit) {
+						console.log("User is asleep for more than 30 seconds");
+						video.pause();
+						// Math.max function is used to ensure that the current time doesn't go below 0.
+						video.currentTime = Math.max(
+							video.currentTime - timeLimit / 1000,
+							0
+						);
+						sleepStartAt = null;
+					}
+				} else if (response["status"] == "awake") {
+					console.log("The user is awake");
+					sleepStartAt = null;
+				} else {
+					console.log("The user is not available");
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+			});
 	}
-}, 5000);
-
-let message = { videoPlaying: true };
-chrome.runtime
-	.sendMessage(message)
-	.then((response) => {
-		console.log("response is ", response); // TODO: response is NULL. Check backbound.js send response
-		if (response["status"] == "asleep") {
-			console.log("The user is asleep");
-		} else if (response["status"] == "awake") {
-			console.log("The user is awake");
-		} else {
-			console.log("The user is not available");
-		}
-	})
-	.catch((error) => {
-		console.error(error);
-	});
+}, 500);
 //TODO: this depends on website. We need to figure out what to do for different websites. We can either
 //TODO: have if blocks for different websites or we can have a generic solution that works for all websites
 
