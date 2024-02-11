@@ -27,29 +27,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			sendResponse(responseJson); // Move sendResponse inside then block
 		});
 		return true; // Indicates we will respond asynchronously
-	} else if (message.action === "createTab") {
-		chrome.tabs.create(
-			{
-				url: message.url,
-			},
-			async (tab) => {
-				await chrome.scripting.executeScript({
-					target: { tabId: tab.id },
-					function: () => {
-						// Once the page has loaded, find the video element
-						window.addEventListener("load", () => {
-							let video = document.querySelector("video");
-							// Send a message to the content script with the video element
-							chrome.runtime.sendMessage({
-								action: "videoElement",
-								video: video,
-							});
-							console.log(video);
-						});
-					},
-				});
-			}
-		);
 	}
 });
 // chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {

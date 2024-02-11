@@ -46,7 +46,7 @@
 
 // ##########################################################################################
 let sleepStartAt = null;
-let timeLimit = 30000;
+let timeLimit = 5000;
 setInterval(() => {
 	let video = document.querySelector("video");
 	console.log("video is ", video);
@@ -75,6 +75,7 @@ setInterval(() => {
 					console.log("The user is awake");
 					sleepStartAt = null;
 				} else {
+					console.log(response);
 					console.log("The user is not available");
 				}
 			})

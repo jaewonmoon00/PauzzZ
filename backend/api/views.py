@@ -24,29 +24,29 @@ def ifTrigger():
     else:
         userState = {"status": "asleep"}
 
-
 # Create your views here.
 @csrf_exempt
 def analyze_eye_state(request):
     if request.method == "GET":
         return JsonResponse(userState)
 
+def update(reqeust):
+    if reqeust.method == "GET":
+        # TODO: start collecting the data & update the global variable
+        pass
 
 num_cores = 4
 
 num_CPU = 1
 num_GPU = 0
 
-config = tf.ConfigProto(
-    intra_op_parallelism_threads=num_cores,
-    inter_op_parallelism_threads=num_cores,
-    allow_soft_placement=True,
-    device_count={"CPU": num_CPU, "GPU": num_GPU},
-)
-
-session = tf.Session(config=config)
-K.set_session(session)
-
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+    try:
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpu, True)
+    except RuntimeError as e:
+        print(e)
 
 class FacialLandMarksPosition:
     left_eye_start_index, left_eye_end_index = face_utils.FACIAL_LANDMARKS_IDXS[
@@ -57,10 +57,10 @@ class FacialLandMarksPosition:
     ]
 
 
-facial_landmarks_predictor = "./models/68_face_landmarks_predictor.dat"
+facial_landmarks_predictor = "/Users/jaewonmoon/Desktop/projects/PauzzZ/AI/models/68_face_landmarks_predictor.dat"#"./models/68_face_landmarks_predictor.dat"
 predictor = dlib.shape_predictor(facial_landmarks_predictor)
 
-model = load_model("./models/weights.149-0.01.hdf5")
+model = load_model("/Users/jaewonmoon/Desktop/projects/PauzzZ/AI/models/weights.149-0.01.hdf5")#"./models/weights.149-0.01.hdf5")
 
 
 def predict_eye_state(model, image):
@@ -150,8 +150,9 @@ while True:
             "yes" if predict_eye_state(model=model, image=right_eye) else "no"
         )
 
+
         print(
-            "left eye open: {0}    right eye open: {1}".format(
+            'left eye open: {0}    right eye open: {1}'.format(
                 left_eye_open, right_eye_open
             )
         )
@@ -165,12 +166,12 @@ while True:
 
         moving_average(array, value, window_size)
         ifTrigger()
-        print("Smoothed Value:", sum(array) / len(array))  # Adjust as needed
+        # print("Smoothed Value:", sum(array) / len(array))  # Adjust as needed
 
-        cv2.imshow("right_eye", right_eye)
-        cv2.imshow("left_eye", left_eye)
+        # cv2.imshow("right_eye", right_eye)
+        # cv2.imshow("left_eye", left_eye)
 
-    cv2.imshow("frame", cv2.flip(frame, 1))
+    # cv2.imshow("frame", cv2.flip(frame, 1))
 
     if cv2.waitKey(1) & 0xFF == ord("q"):
         break
