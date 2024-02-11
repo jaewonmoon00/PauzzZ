@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="popup.css">
+  <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+</head>
+<body>
+    <div class="logo">
+        <img src="PauZzz.png" width="250" height="250">
+        <button class="button-45">Activate PauzzZ</button>
+    </div>
+    <div class="counter-container">
+        <h4>Select the number of seconds</h4>
+        <div id="counter">0</div>
+        <div id="counter-buttons">
+            <button class="button-45" onclick="decrement()" width="30">-</button>
+            <button class="button-45" onclick="increment()" width="30">+</button>
+        </div>
+    </div>
+
+    <script>
+      let counterValue = 0;
+
+      function updateCounter() {
+        document.getElementById('counter').innerText = counterValue;
+      }
+
+      function increment() {
+        counterValue++;
+        updateCounter();
+      }
+
+      function decrement() {
+        if (counterValue > 0) {
+          counterValue--;
+          updateCounter();
+        }
+      }
+    </script>
+</body>
+</html>
+
+
+
