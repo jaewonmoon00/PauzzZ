@@ -1,0 +1,93 @@
+.logo {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+body {
+    font-family: 'Poppins', sans-serif;
+    /* display: flex; */
+    justify-content: center;
+    align-items: center;
+    /* height: 100vh; */
+    margin: 0;
+    height: 400px;
+    width: 400px;
+  }
+
+.counter-container {
+text-align: center;
+align-items: center;
+}
+
+#counter {
+font-size: 24px;
+margin-bottom: 20px;
+}
+
+.counter-buttons {
+display: flex;
+flex-direction: row;
+justify-content: center;
+}
+
+.counter-buttons button {
+    width: 20px;
+}
+
+/* CSS */
+.button-45 {
+  align-items: center;
+  /* background-color: #FFE7E7; */
+  background-position: 0 0;
+  border: 1px solid #dddddd;
+  border-radius: 11px;
+  box-sizing: border-box;
+  color: black;
+  cursor: pointer;
+  /* display: flex; */
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  line-height: 33.4929px;
+  list-style: outside url(https://www.smashingmagazine.com/images/bullet.svg) none;
+  padding: 2px 12px;
+  text-decoration: none;
+  text-shadow: none;
+  text-underline-offset: 1px;
+  transition: border .2s ease-in-out, box-shadow .2s ease-in-out;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  white-space: nowrap;
+  word-break: break-word;
+  max-width: 250px;
+  margin-bottom: 20px;
+}
+
+.button-45:active,
+.button-45:hover,
+.button-45:focus {
+  outline: 0;
+}
+
+
+.button-45:active {
+  background-color: #000000;
+  box-shadow: rgba(0, 0, 0, 0.12) 0 1px 3px 0 inset;
+  color: #FFFFFF;
+}
+
+.button-45:hover {
+  background-color: #FFE3E3;
+  border-color: #dddddd;
+}
+
+.button-45:active:hover,
+.button-45:focus:hover,
+.button-45:focus {
+  background-color: #000000;
+  box-shadow: rgba(0, 0, 0, 0.12) 0 1px 3px 0 inset;
+  color: #FFFFFF;
+}
