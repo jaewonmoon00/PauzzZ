@@ -32,150 +32,142 @@ def analyze_eye_state(request):
 
 def update(reqeust):
     if reqeust.method == "GET":
-        # TODO: start collecting the data & update the global variable
-        pass
+        gpus = tf.config.experimental.list_physical_devices('GPU')
+        if gpus:
+            try:
+                for gpu in gpus:
+                    tf.config.experimental.set_memory_growth(gpu, True)
+            except RuntimeError as e:
+                print(e)
 
-num_cores = 4
-
-num_CPU = 1
-num_GPU = 0
-
-gpus = tf.config.experimental.list_physical_devices('GPU')
-if gpus:
-    try:
-        for gpu in gpus:
-            tf.config.experimental.set_memory_growth(gpu, True)
-    except RuntimeError as e:
-        print(e)
-
-class FacialLandMarksPosition:
-    left_eye_start_index, left_eye_end_index = face_utils.FACIAL_LANDMARKS_IDXS[
-        "left_eye"
-    ]
-    right_eye_start_index, right_eye_end_index = face_utils.FACIAL_LANDMARKS_IDXS[
-        "right_eye"
-    ]
+        class FacialLandMarksPosition:
+            left_eye_start_index, left_eye_end_index = face_utils.FACIAL_LANDMARKS_IDXS[
+                "left_eye"
+            ]
+            right_eye_start_index, right_eye_end_index = face_utils.FACIAL_LANDMARKS_IDXS[
+                "right_eye"
+            ]
 
 
-facial_landmarks_predictor = "/Users/jaewonmoon/Desktop/projects/PauzzZ/AI/models/68_face_landmarks_predictor.dat"#"./models/68_face_landmarks_predictor.dat"
-predictor = dlib.shape_predictor(facial_landmarks_predictor)
+        facial_landmarks_predictor = "/Users/jaewonmoon/Desktop/projects/PauzzZ/AI/models/68_face_landmarks_predictor.dat"#"./models/68_face_landmarks_predictor.dat"
+        predictor = dlib.shape_predictor(facial_landmarks_predictor)
 
-model = load_model("/Users/jaewonmoon/Desktop/projects/PauzzZ/AI/models/weights.149-0.01.hdf5")#"./models/weights.149-0.01.hdf5")
-
-
-def predict_eye_state(model, image):
-    image = cv2.resize(image, (20, 10))
-    image = image.astype(dtype=np.float32)
-
-    image_batch = np.reshape(image, (1, 10, 20, 1))
-    image_batch = keras.applications.mobilenet_v2.preprocess_input(image_batch)
-
-    return np.argmax(model.predict(image_batch)[0])
+        model = load_model("/Users/jaewonmoon/Desktop/projects/PauzzZ/AI/models/weights.149-0.01.hdf5")#"./models/weights.149-0.01.hdf5")
 
 
-# Initialize array to store values
+        def predict_eye_state(model, image):
+            image = cv2.resize(image, (20, 10))
+            image = image.astype(dtype=np.float32)
+
+            image_batch = np.reshape(image, (1, 10, 20, 1))
+            image_batch = keras.applications.mobilenet_v2.preprocess_input(image_batch)
+
+            return np.argmax(model.predict(image_batch)[0])
 
 
-# Define the window size for the moving average
-window_size = 40  # You can adjust this as needed
+        # Initialize array to store values
 
 
-def moving_average(array, new_value, window_size):
-    array.append(new_value)
-    if len(array) > window_size:
-        array.pop(0)  # Remove the oldest value if the window is full
+        # Define the window size for the moving average
+        window_size = 40  # You can adjust this as needed
 
 
-cap = cv2.VideoCapture(0)
-scale = 0.5
+        def moving_average(array, new_value, window_size):
+            array.append(new_value)
+            if len(array) > window_size:
+                array.pop(0)  # Remove the oldest value if the window is full
 
 
-while True:
-    c = time.time()
-
-    # Capture frame-by-frame
-    ret, frame = cap.read()
-
-    image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-    original_height, original_width = image.shape[:2]
-
-    resized_image = cv2.resize(image, (0, 0), fx=scale, fy=scale)
-    lab = cv2.cvtColor(resized_image, cv2.COLOR_BGR2LAB)
-
-    l, _, _ = cv2.split(lab)
-
-    resized_height, resized_width = l.shape[:2]
-    height_ratio, width_ratio = (
-        original_height / resized_height,
-        original_width / resized_width,
-    )
-
-    face_locations = face_recognition.face_locations(l, model="hog")
-
-    if len(face_locations):
-        top, right, bottom, left = face_locations[0]
-        x1, y1, x2, y2 = left, top, right, bottom
-
-        x1 = int(x1 * width_ratio)
-        y1 = int(y1 * height_ratio)
-        x2 = int(x2 * width_ratio)
-        y2 = int(y2 * height_ratio)
-
-        # draw face rectangle
-
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        shape = predictor(gray, dlib.rectangle(x1, y1, x2, y2))
-
-        face_landmarks = face_utils.shape_to_np(shape)
-
-        left_eye_indices = face_landmarks[
-            FacialLandMarksPosition.left_eye_start_index : FacialLandMarksPosition.left_eye_end_index
-        ]
-
-        (x, y, w, h) = cv2.boundingRect(np.array([left_eye_indices]))
-        left_eye = gray[y : y + h, x : x + w]
-
-        right_eye_indices = face_landmarks[
-            FacialLandMarksPosition.right_eye_start_index : FacialLandMarksPosition.right_eye_end_index
-        ]
-
-        (x, y, w, h) = cv2.boundingRect(np.array([right_eye_indices]))
-        right_eye = gray[y : y + h, x : x + w]
-
-        left_eye_open = (
-            "yes" if predict_eye_state(model=model, image=left_eye) else "no"
-        )
-        right_eye_open = (
-            "yes" if predict_eye_state(model=model, image=right_eye) else "no"
-        )
+        cap = cv2.VideoCapture(0)
+        scale = 0.5
 
 
-        print(
-            'left eye open: {0}    right eye open: {1}'.format(
-                left_eye_open, right_eye_open
+        while True:
+            c = time.time()
+
+            # Capture frame-by-frame
+            ret, frame = cap.read()
+
+            image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+            original_height, original_width = image.shape[:2]
+
+            resized_image = cv2.resize(image, (0, 0), fx=scale, fy=scale)
+            lab = cv2.cvtColor(resized_image, cv2.COLOR_BGR2LAB)
+
+            l, _, _ = cv2.split(lab)
+
+            resized_height, resized_width = l.shape[:2]
+            height_ratio, width_ratio = (
+                original_height / resized_height,
+                original_width / resized_width,
             )
-        )
 
-        if left_eye_open == "yes" and right_eye_open == "yes":
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            value = 1
-        else:
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
-            value = 0
+            face_locations = face_recognition.face_locations(l, model="hog")
 
-        moving_average(array, value, window_size)
-        ifTrigger()
-        # print("Smoothed Value:", sum(array) / len(array))  # Adjust as needed
+            if len(face_locations):
+                top, right, bottom, left = face_locations[0]
+                x1, y1, x2, y2 = left, top, right, bottom
 
-        # cv2.imshow("right_eye", right_eye)
-        # cv2.imshow("left_eye", left_eye)
+                x1 = int(x1 * width_ratio)
+                y1 = int(y1 * height_ratio)
+                x2 = int(x2 * width_ratio)
+                y2 = int(y2 * height_ratio)
 
-    # cv2.imshow("frame", cv2.flip(frame, 1))
+                # draw face rectangle
 
-    if cv2.waitKey(1) & 0xFF == ord("q"):
-        break
+                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                shape = predictor(gray, dlib.rectangle(x1, y1, x2, y2))
 
-# When everything done, release the capture
-cap.release()
-cv2.destroyAllWindows()
+                face_landmarks = face_utils.shape_to_np(shape)
+
+                left_eye_indices = face_landmarks[
+                    FacialLandMarksPosition.left_eye_start_index : FacialLandMarksPosition.left_eye_end_index
+                ]
+
+                (x, y, w, h) = cv2.boundingRect(np.array([left_eye_indices]))
+                left_eye = gray[y : y + h, x : x + w]
+
+                right_eye_indices = face_landmarks[
+                    FacialLandMarksPosition.right_eye_start_index : FacialLandMarksPosition.right_eye_end_index
+                ]
+
+                (x, y, w, h) = cv2.boundingRect(np.array([right_eye_indices]))
+                right_eye = gray[y : y + h, x : x + w]
+
+                left_eye_open = (
+                    "yes" if predict_eye_state(model=model, image=left_eye) else "no"
+                )
+                right_eye_open = (
+                    "yes" if predict_eye_state(model=model, image=right_eye) else "no"
+                )
+
+
+                print(
+                    'left eye open: {0}    right eye open: {1}'.format(
+                        left_eye_open, right_eye_open
+                    )
+                )
+
+                if left_eye_open == "yes" and right_eye_open == "yes":
+                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                    value = 1
+                else:
+                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
+                    value = 0
+
+                moving_average(array, value, window_size)
+                ifTrigger()
+                # print("Smoothed Value:", sum(array) / len(array))  # Adjust as needed
+
+                # cv2.imshow("right_eye", right_eye)
+                # cv2.imshow("left_eye", left_eye)
+
+            # cv2.imshow("frame", cv2.flip(frame, 1))
+
+            if cv2.waitKey(1) & 0xFF == ord("q"):
+                break
+
+        # When everything done, release the capture
+        cap.release()
+        cv2.destroyAllWindows()
