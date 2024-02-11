@@ -1,0 +1,11 @@
+name: mcwics2024
+
+dependencies:
+  - numpy
+  - requests
+  - scipy
+  - keras
+  - tensorflow
+  - opencv
+ 
+
