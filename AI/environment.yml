@@ -1,0 +1,11 @@
+name: facial_landmarks_env
+
+dependencies:
+  - numpy
+  - requests
+  - scipy
+  - keras
+  - tensorflow
+  - opencv
+ 
+
